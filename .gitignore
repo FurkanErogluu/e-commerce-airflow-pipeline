@@ -1,1 +1,17 @@
 not
+.idea/
+
+# Sanal Ortam
+venv/
+env/
+.venv/
+
+# Python Ön Bellek Dosyaları
+__pycache__/
+*.pyc
+
+# Veri Dosyaları
+data/
+
+# Çevresel Değişkenler (API Key'ler için)
+.env
