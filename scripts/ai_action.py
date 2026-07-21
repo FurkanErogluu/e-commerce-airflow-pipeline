@@ -1,3 +1,5 @@
+import json
+
 import pandas as pd
 import google.generativeai as genai
 import os
@@ -14,8 +16,10 @@ def generate_ai_insights():
 
     print('2- Ozet Veri Okunuyor..')
     #geminiye giden metini duzeltmek ve okunabilirligi arttirmak:
-    df = pd.read_json(processed_data_path, orient='records')  #orient yazmasakta python arka planda hangi yapida oldugunu bakarak tahmin edebilir.
-    veri_metni = df.to_string(index=False) #modelin index kisimlarini okuyup kafasinin karismasina ve bosa tokenin onune gecildi.
+
+    with open(processed_data_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    veri_metni = json.dumps(data, ensure_ascii=False, indent=2)
 
     print('3- Gemini Apiye Baglaniliyor...')
     api_key = Variable.get('GEMINI_API_KEY')
