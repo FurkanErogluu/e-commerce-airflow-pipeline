@@ -18,6 +18,7 @@ Benim airflowda bu scriptin bulundugu dizinin bir ust dizine cikmam gerekirki pr
 """
 sys.path.append('/opt/airflow')
 from scripts.process_data import clean_and_summarize_data
+from scripts.ai_action import generate_ai_insights
 
 
 #macimdeki data klasoru docker da ->./data:/opt/airflow/data  yani /opt/airflow/data klasorune denk gelir
@@ -53,9 +54,13 @@ def ecommerce_pipeline():
         """scripts/process_data.py içindeki clean_and_summarize_data fonksiyonunu çalıştırır."""
         clean_and_summarize_data()
 
+    @task
+    def ai_insight_task():
+        generate_ai_insights()
 
     #TASK BAGIMLILIKLARI
-    check_raw_data() >> process_data_task() #right shift (>>) operatoru gorevlerin sirasini belirler
+    check_raw_data() >> process_data_task() >> ai_insight_task()
+    #right shift (>>) operatoru gorevlerin sirasini belirler
 
 #DAG'i tanimla ve baslat! SART(Normal fonk cagirmak gibi)
 ecommerce_pipeline()
