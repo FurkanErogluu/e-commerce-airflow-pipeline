@@ -25,6 +25,10 @@ services:
       POSTGRES_DB: airflow
     ports:
       - "5432:5432"
+    volumes:
+      # tüm tablolar, veritabanı dosyaları ve kullanıcı şifreleri vs. iki noktanin sagina yazar, bu bilgileri ben
+      #  bilgisayarimda olusturdugum postgres-db-volume de saklamaya baslarim bu sayede variables eklentilerim kaybolmaz.
+      - postgres-db-volume:/var/lib/postgresql/data
 
   airflow-init:
     <<: *airflow-common
@@ -53,3 +57,6 @@ services:
     depends_on:
       - postgres
       - airflow-init
+#docker ayaga kalkarken postgres-db-volume --->  /var/lib/postgresql/data  mount edilir(baglanir birbirine)
+volumes:
+  postgres-db-volume:
