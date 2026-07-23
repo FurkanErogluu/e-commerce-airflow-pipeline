@@ -24,7 +24,7 @@ services:
       POSTGRES_PASSWORD: airflow
       POSTGRES_DB: airflow
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       # tüm tablolar, veritabanı dosyaları ve kullanıcı şifreleri vs. iki noktanin sagina yazar, bu bilgileri ben
       #  bilgisayarimda olusturdugum postgres-db-volume de saklamaya baslarim bu sayede variables eklentilerim kaybolmaz.
