@@ -19,6 +19,7 @@ Benim airflowda bu scriptin bulundugu dizinin bir ust dizine cikmam gerekirki pr
 sys.path.append('/opt/airflow')
 from scripts.process_data import clean_and_summarize_data
 from scripts.ai_action import generate_ai_insights
+from scripts.render_dashboard import create_html_report
 
 
 #macimdeki data klasoru docker da ->./data:/opt/airflow/data  yani /opt/airflow/data klasorune denk gelir
@@ -58,8 +59,12 @@ def ecommerce_pipeline():
     def ai_insight_task():
         generate_ai_insights()
 
+    @task
+    def render_dashboard_task():
+        create_html_report()
+
     #TASK BAGIMLILIKLARI
-    check_raw_data() >> process_data_task() >> ai_insight_task()
+    check_raw_data() >> process_data_task() >> ai_insight_task() >> render_dashboard_task()
     #right shift (>>) operatoru gorevlerin sirasini belirler
 
 #DAG'i tanimla ve baslat! SART(Normal fonk cagirmak gibi)

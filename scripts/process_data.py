@@ -81,10 +81,10 @@ def clean_and_summarize_data():
 
     #json modulu hicbir pandas objesini dogrudan JSON yapmaz bunlari bir sekilde list ve dict yapisina cevirmeliyiz.
     dashboard_data = {
-        'Genel KPI': general_kpis,   #SOZLUK-DICT YAPIDA
-        'En iyi Urunler' : top_products.to_dict(orient='records'), #LISTE-[] yani sozluk listesi YAPISINDA
-        'En iyi Ulkeler' : top_countries.to_dict(orient='records'),#LISTE-[] yani sozluk listesi YAPISINDA
-        'Musteri Segmentleri' : segment_counts #SOZLUK-DICT YAPIDA
+        'Genel_KPI': general_kpis,   #SOZLUK-DICT YAPIDA
+        'En_iyi_Urunler' : top_products.to_dict(orient='records'), #LISTE-[] yani sozluk listesi YAPISINDA
+        'En_iyi_Ulkeler' : top_countries.to_dict(orient='records'),#LISTE-[] yani sozluk listesi YAPISINDA
+        'Musteri_Segmentleri' : segment_counts #SOZLUK-DICT YAPIDA
     }
 
     print('Detayli Veriler JSON olarak kaydediliyor...')

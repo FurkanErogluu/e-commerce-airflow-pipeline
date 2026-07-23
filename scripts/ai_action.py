@@ -53,7 +53,7 @@ def generate_ai_insights():
     print('4- Yapay Zekadan Analiz Bekleniyor...')
     response = model.generate_content(prompt)
 
-    #Gemininin ekledigi markdown bloklarini
+    #Gemininin ekledigi markdown bloklarini (``` yapisini siler) -> Gemini insan gozune hitap icin ekliyor
     temiz_json_metni = response.text.replace("```json", "").replace("```", "").strip()
 
     print("5- Yanıt alındı, diske kaydediliyor...")
