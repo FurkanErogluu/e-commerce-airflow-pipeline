@@ -23,8 +23,9 @@ def create_tables():
                 total_orders INTEGER,
                 total_customers INTEGER,
                 aov NUMERIC(10, 2),
-                top_products JSONB,     -- Yeni eklendi (JSON formatında tutulacak)
-                rfm_segments JSONB,     -- Yeni eklendi (JSON formatında tutulacak)
+                top_products JSONB,     
+                top_countries JSONB,
+                rfm_segments JSONB,  
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         """)
