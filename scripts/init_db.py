@@ -14,6 +14,9 @@ def create_tables():
         conn = psycopg2.connect(**DB_CONFIG)
         cursor = conn.cursor()
 
+        # Tabloyu sıfırlayıp baştan yaratıyoruz (Yeni kolonları eklemek için)
+        cursor.execute("DROP TABLE IF EXISTS daily_kpi;")
+
         print("2. 'daily_kpi' tablosu (JSONB destekli) oluşturuluyor...")
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS daily_kpi (
@@ -26,6 +29,7 @@ def create_tables():
                 top_products JSONB,     
                 top_countries JSONB,
                 rfm_segments JSONB,  
+                hourly_sales JSONB,  
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         """)
