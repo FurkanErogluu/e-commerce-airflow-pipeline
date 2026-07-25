@@ -16,9 +16,10 @@ Script dosyaların: /opt/airflow/scripts/ klasöründedir.
 
 Benim airflowda bu scriptin bulundugu dizinin bir ust dizine cikmam gerekirki process_datayi gorsun
 """
+
 sys.path.append('/opt/airflow')
 from scripts.process_data import clean_and_summarize_data
-from scripts.ai_action import generate_ai_insights
+from scripts.ai_action import generate_ai_insight
 
 #macimdeki data klasoru docker da ->./data:/opt/airflow/data  yani /opt/airflow/data klasorune denk gelir
 raw_data_path = "/opt/airflow/data/raw_sales.csv"
@@ -55,7 +56,7 @@ def ecommerce_pipeline():
 
     @task
     def ai_insight_task():
-        generate_ai_insights()
+        generate_ai_insight()
 
 
 
