@@ -3,8 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
-from scripts.process_data import DB_CONFIG
-
 app = FastAPI(title = "E-Ticaret Analitik API")
 
 app.add_middleware(
@@ -18,7 +16,7 @@ app.add_middleware(
 #dockerdaki vtye baglanma icin
 DB_CONFIG = {
     'dbname': 'airflow', 'user': 'airflow', 'password': 'airflow',
-    'host': 'localhost', 'port': '5433'
+    'host': '127.0.0.1', 'port': '5433'
 }
 
 def get_db_connection():
