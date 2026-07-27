@@ -201,13 +201,13 @@
 
         async function fetchData() {
             try {
-              <!-- 1.ADIM: Veriyi APIden cekmek(Fetch)
-               tarayici fast apinin calistigi 8000 portuna GET istegi atar,O JSON yanit olarak doner bunu da
-               data degiskeninin icine koyariz.     -->
+                // 1.ADIM: Veriyi APIden cekmek(Fetch)
+                // tarayici fast apinin calistigi 8000 portuna GET istegi atar,O JSON yanit olarak doner bunu da
+                // data degiskeninin icine koyariz.
                 const response = await fetch('http://127.0.0.1:8000/api/dashboard/latest');
                 const data = await response.json();
 
-                <!-- 2.ADIM: Metin ve rakamlari HTMLE'e basmak        -->
+                //-- 2.ADIM: Metin ve rakamlari HTMLE'e basmak
                 // 1. Text Update
                 document.getElementById('targetDate').innerText = data.target_date;
                 document.getElementById('totalRevenue').innerText = formatMoney(data.total_revenue);
@@ -220,7 +220,7 @@
                 document.getElementById('aiAction').innerText = data.urgent_action || 'Analiz bulunamadı.';
                 document.getElementById('aiOpp').innerText = data.hidden_opportunity || 'Analiz bulunamadı.';
 
-                <!-- 3.ADIM: Tabloyu Dinamik Olarak Olusturmak       -->
+                // 3.ADIM: Tabloyu Dinamik Olarak Olusturmak
                 // 3. Table Update
                 const tbody = document.getElementById('productsTableBody');
                 tbody.innerHTML = '';
