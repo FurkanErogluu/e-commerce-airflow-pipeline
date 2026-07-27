@@ -1,212 +1,313 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Ticaret Yönetim Paneli</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+    <title>DataOps B.I. - Mega Dashboard</title>
 
-    <!-- Modern Font ve Stil Kütüphaneleri -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tabler Core CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta19/dist/css/tabler.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
     <style>
-        :root { --primary: #4f46e5; --bg-light: #f8fafc; --text-dark: #0f172a; --text-muted: #64748b; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-light); color: var(--text-dark); }
-
-        /* Modern Admin Paneli Tasarımı */
-        .sidebar { background-color: #1e293b; min-height: 100vh; color: white; padding-top: 20px; }
-        .sidebar .nav-link { color: #cbd5e1; font-weight: 500; padding: 12px 20px; margin-bottom: 5px; border-radius: 8px; }
-        .sidebar .nav-link:hover, .sidebar .nav-link.active { background-color: #334155; color: white; }
-
-        .card { border: none; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 24px; }
-        .kpi-title { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
-        .kpi-value { font-size: 1.8rem; font-weight: 700; color: var(--text-dark); }
-
-        .ai-panel { border-left: 4px solid var(--primary); background-color: white; }
-        .ai-title { color: var(--primary); font-weight: 600; font-size: 1.1rem; margin-bottom: 15px; }
-        .badge-risk { background-color: #fee2e2; color: #991b1b; }
-        .badge-action { background-color: #fef3c7; color: #92400e; }
-        .badge-opp { background-color: #dcfce3; color: #166534; }
+        @import url('https://rsms.me/inter/inter.css');
+        :root { --tblr-font-sans-serif: 'Inter', sans-serif; }
+        body { font-family: var(--tblr-font-sans-serif); background-color: #f4f6fa; }
+        .ai-card-content { font-size: 0.85rem; line-height: 1.6; color: #545d6d; }
+        .chart-container { position: relative; height: 250px; width: 100%; }
+        .table-sm td, .table-sm th { padding: 0.5rem; font-size: 0.85rem; }
     </style>
 </head>
-<body>
+<body class="layout-fluid">
+    <div class="page">
 
-<div class="container-fluid p-0">
-    <div class="row g-0">
-        <!-- SOL MENÜ (Sidebar) -->
-        <div class="col-auto col-md-2 d-none d-md-block sidebar px-3">
-            <h4 class="text-center mb-4 mt-2 fw-bold text-white">
-                <i class="bi bi-hexagon-fill text-primary"></i> DataOps
-            </h4>
-            <div class="nav flex-column">
-                <a href="#" class="nav-link active"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-                <a href="#" class="nav-link"><i class="bi bi-people me-2"></i> Müşteriler</a>
-                <a href="#" class="nav-link"><i class="bi bi-box-seam me-2"></i> Ürünler</a>
-                <a href="#" class="nav-link"><i class="bi bi-gear me-2"></i> Ayarlar</a>
-            </div>
-        </div>
-
-        <!-- ANA İÇERİK -->
-        <div class="col p-4">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h3 class="fw-bold mb-0">Gerçek Zamanlı Satış Analitiği</h3>
-                    <p class="text-muted mb-0">Son Güncellenme: <span id="targetDate" class="fw-bold text-primary">Yükleniyor...</span></p>
-                </div>
-                <button class="btn btn-primary px-4 py-2" onclick="fetchData()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
-            </div>
-
-            <!-- KPI KARTLARI -->
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="card p-4">
-                        <div class="kpi-title">Toplam Ciro</div>
-                        <div class="kpi-value" id="totalRevenue">£0.00</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card p-4">
-                        <div class="kpi-title">Toplam Sipariş</div>
-                        <div class="kpi-value" id="totalOrders">0</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card p-4">
-                        <div class="kpi-title">Tekil Müşteri</div>
-                        <div class="kpi-value" id="totalCustomers">0</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card p-4">
-                        <div class="kpi-title">Ort. Sepet (AOV)</div>
-                        <div class="kpi-value" id="aov">£0.00</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- GEMINI YAPAY ZEKA PANELİ -->
-            <div class="card p-4 ai-panel mb-4">
-                <div class="ai-title"><i class="bi bi-robot"></i> Gemini Strateji Ajandası</div>
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <div class="p-3 rounded bg-light h-100">
-                            <span class="badge badge-risk mb-2 px-2 py-1"> Kritik Risk Analizi</span>
-                            <p class="mb-0 small" id="aiRisk">Yükleniyor...</p>
+        <!-- ÜST NAVİGASYON (Dark Mode) -->
+        <header class="navbar navbar-expand-md navbar-dark d-print-none" style="background-color: #1e293b;">
+            <div class="container-xl">
+                <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon text-primary me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5" /><path d="M12 12l8 -4.5" /><path d="M12 12l0 9" /><path d="M12 12l-8 -4.5" /></svg>
+                    DataOps Komuta Merkezi
+                </h1>
+                <div class="navbar-nav flex-row order-md-last">
+                    <div class="nav-item d-flex align-items-center text-white">
+                        <!-- Solda Avatar -->
+                        <span class="avatar avatar-sm rounded-circle" style="background-image: url('https://eu.ui-avatars.com/api/?name=Furkan+Eroglu&background=206bc4&color=fff')"></span>
+                        <!-- Sağda İsim ve Altında Ortalanmış Unvan -->
+                        <div class="ms-2 d-none d-xl-block text-center">
+                            <div class="fw-bold" style="font-size: 14px; line-height: 1.2;">Furkan Eroğlu</div>
+                            <div class="text-muted" style="font-size: 11px; line-height: 1.2;">Data Scientist</div>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="p-3 rounded bg-light h-100">
-                            <span class="badge badge-action mb-2 px-2 py-1"> Acil Aksiyon</span>
-                            <p class="mb-0 small" id="aiAction">Yükleniyor...</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="page-wrapper">
+            <!-- SAYFA BAŞLIĞI VE YENİLE BUTONU -->
+            <div class="page-header d-print-none mt-3">
+                <div class="container-xl">
+                    <div class="row g-2 align-items-center">
+                        <div class="col">
+                            <div class="page-pretitle text-primary fw-bold">Canlı Veri Akışı</div>
+                            <h2 class="page-title text-dark">Otonom Sistem Simülasyonu</h2>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="p-3 rounded bg-light h-100">
-                            <span class="badge badge-opp mb-2 px-2 py-1"> Büyüme Fırsatı</span>
-                            <p class="mb-0 small" id="aiOpp">Yükleniyor...</p>
+                        <div class="col-auto ms-auto">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="text-muted fw-medium">Hedef Tarih: <strong id="targetDate" class="text-dark">Yükleniyor...</strong></span>
+                                <button class="btn btn-primary" onclick="fetchAllData()">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" /><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" /></svg>
+                                    Tarihi Yenile
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- TABLOLAR VE GRAFİKLER -->
-            <div class="row">
-                <div class="col-md-7">
-                    <div class="card p-4 h-100">
-                        <h6 class="fw-bold mb-3"> En Çok Ciro Getiren Ürünler</h6>
-                        <table class="table table-hover align-middle">
-                            <thead class="table-light text-muted small">
-                                <tr><th>Ürün</th><th>Satış</th><th>Ciro</th></tr>
-                            </thead>
-                            <tbody id="productsTableBody">
-                                <!-- JS ile Doldurulacak -->
-                            </tbody>
-                        </table>
+            <div class="page-body">
+                <div class="container-xl">
+
+                    <!-- 1. SATIR: KPI KARTLARI -->
+                    <div class="row row-deck row-cards mb-3">
+                        <div class="col-sm-6 col-lg-3"><div class="card"><div class="card-body"><div class="text-muted fw-bold text-uppercase mb-2">Toplam Ciro</div><div class="h1 mb-0 text-dark" id="totalRevenue">£0.00</div></div></div></div>
+                        <div class="col-sm-6 col-lg-3"><div class="card"><div class="card-body"><div class="text-muted fw-bold text-uppercase mb-2">Toplam Sipariş</div><div class="h1 mb-0 text-dark" id="totalOrders">0</div></div></div></div>
+                        <div class="col-sm-6 col-lg-3"><div class="card"><div class="card-body"><div class="text-muted fw-bold text-uppercase mb-2">Tekil Müşteri</div><div class="h1 mb-0 text-dark" id="totalCustomers">0</div></div></div></div>
+                        <div class="col-sm-6 col-lg-3"><div class="card"><div class="card-body"><div class="text-muted fw-bold text-uppercase mb-2">Sepet Ort. (AOV)</div><div class="h1 mb-0 text-dark" id="aov">£0.00</div></div></div></div>
                     </div>
-                </div>
-                <div class="col-md-5">
-                    <div class="card p-4 h-100 d-flex flex-column align-items-center">
-                        <h6 class="fw-bold mb-3 w-100">👥 Müşteri Sağlığı (RFM)</h6>
-                        <div style="width: 80%;"><canvas id="rfmChart"></canvas></div>
+
+                    <!-- 2. SATIR: GEMINI AI VE RFM (Yan Yana) -->
+                    <div class="row row-cards mb-3 align-items-stretch">
+                        <div class="col-lg-8">
+                            <div class="card h-100">
+                                <div class="card-header border-0 pb-0">
+                                    <h3 class="card-title text-primary fw-bold"><svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" /><path d="M17 4a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2" /><path d="M19 11h2m-1 -1v2" /></svg> Gemini Strateji Ajandası</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3 h-100">
+                                        <div class="col-md-4">
+                                            <div class="p-3 bg-red-lt rounded h-100 border border-red text-red">
+                                                <h4 class="fw-bold mb-2"> Kritik Risk</h4>
+                                                <div class="ai-card-content text-dark" id="aiRisk">Yükleniyor...</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="p-3 bg-yellow-lt rounded h-100 border border-yellow text-yellow">
+                                                <h4 class="fw-bold mb-2"> Acil Aksiyon</h4>
+                                                <div class="ai-card-content text-dark" id="aiAction">Yükleniyor...</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="p-3 bg-green-lt rounded h-100 border border-green text-green">
+                                                <h4 class="fw-bold mb-2"> Gizli Fırsat</h4>
+                                                <div class="ai-card-content text-dark" id="aiOpp">Yükleniyor...</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card h-100">
+                                <div class="card-header border-0"><h3 class="card-title fw-bold"> RFM Müşteri Dağılımı</h3></div>
+                                <div class="card-body d-flex align-items-center justify-content-center pt-0">
+                                    <div class="chart-container" style="height: 200px;"><canvas id="rfmChart"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- 3. SATIR: GEÇMİŞ 14 GÜN TRENDİ VE SAATLİK SATIŞLAR (Grafikler) -->
+                    <div class="row row-cards mb-3">
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header border-0"><h3 class="card-title fw-bold"> Son 14 Günlük Ciro Trendi (Geçmişe Dönük)</h3></div>
+                                <div class="card-body pt-0">
+                                    <div class="chart-container"><canvas id="historyChart"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header border-0"><h3 class="card-title fw-bold"> Saatlik Sipariş Yoğunluğu (Bugün)</h3></div>
+                                <div class="card-body pt-0">
+                                    <div class="chart-container"><canvas id="hourlyChart"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. SATIR: ÜRÜNLER VE ÜLKELER TABLOLARI -->
+                    <div class="row row-cards mb-5">
+                        <div class="col-lg-7">
+                            <div class="card h-100">
+                                <div class="card-header"><h3 class="card-title fw-bold"> En Çok Kazandıran 5 Ürün</h3></div>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-vcenter table-hover card-table">
+                                        <thead class="text-muted"><tr><th>Ürün Tanımı</th><th class="text-center">Adet</th><th class="text-end">Ciro</th></tr></thead>
+                                        <tbody id="productsBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="card h-100">
+                                <div class="card-header"><h3 class="card-title fw-bold"> Ciro Lideri İlk 5 Ülke</h3></div>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-vcenter table-hover card-table">
+                                        <thead class="text-muted"><tr><th>Ülke</th><th class="text-center">Sipariş</th><th class="text-end">Ciro</th></tr></thead>
+                                        <tbody id="countriesBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- JAVASCRIPT: API BAĞLANTISI VE GRAFİKLER -->
-<script>
-    let rfmChartInstance = null; // Grafiği güncellemek için global değişken
+    <!-- JAVASCRIPT: Çift API Çekimi ve 3 Farklı Grafik -->
+    <script>
+        let rfmChart = null, historyChart = null, hourlyChart = null;
 
-    // Sayıları para formatına çeviren yardımcı fonksiyon
-    const formatMoney = (num) => new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(num);
-    const formatNum = (num) => new Intl.NumberFormat('en-US').format(num);
+        const formatMoney = (num) => new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(num || 0);
+        const formatNum = (num) => new Intl.NumberFormat('en-US').format(num || 0);
 
-    async function fetchData() {
-        try {
-            // FastAPI'den veriyi çekiyoruz!
-            const response = await fetch('http://127.0.0.1:8000/api/dashboard/latest');
-            const data = await response.json();
+        async function fetchAllData() {
+            try {
+                const [latestRes, historyRes] = await Promise.all([
+                    fetch('http://localhost:8000/api/dashboard/latest'),
+                    fetch('http://localhost:8000/api/dashboard/history')
+                ]);
 
-            // 1. Yazıları ve Rakamları Güncelleme
+                if(!latestRes.ok || !historyRes.ok) throw new Error("API yanıt vermedi!");
+
+                const latestData = await latestRes.json();
+                const historyData = await historyRes.json();
+
+                renderLatestData(latestData);
+                renderCharts(latestData, historyData);
+
+            } catch (error) {
+                console.error("Hata:", error);
+                alert("Veri çekilemedi! FastAPI sunucusunun (uvicorn) çalıştığından emin olun.");
+            }
+        }
+
+        function renderLatestData(data) {
             document.getElementById('targetDate').innerText = data.target_date;
             document.getElementById('totalRevenue').innerText = formatMoney(data.total_revenue);
             document.getElementById('totalOrders').innerText = formatNum(data.total_orders);
             document.getElementById('totalCustomers').innerText = formatNum(data.total_customers);
             document.getElementById('aov').innerText = formatMoney(data.aov);
 
-            // 2. AI Stratejilerini Güncelleme
-            document.getElementById('aiRisk').innerText = data.risk_analysis || 'Veri yok.';
-            document.getElementById('aiAction').innerText = data.urgent_action || 'Veri yok.';
-            document.getElementById('aiOpp').innerText = data.hidden_opportunity || 'Veri yok.';
+            document.getElementById('aiRisk').innerText = data.risk_analysis || 'Veri bulunamadı.';
+            document.getElementById('aiAction').innerText = data.urgent_action || 'Veri bulunamadı.';
+            document.getElementById('aiOpp').innerText = data.hidden_opportunity || 'Veri bulunamadı.';
 
-            // 3. Tabloyu Doldurma
-            const tbody = document.getElementById('productsTableBody');
-            tbody.innerHTML = ''; // Önce temizle
-            data.top_products.forEach(urun => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td class="fw-medium text-truncate" style="max-width: 200px;">${urun.Description}</td>
-                        <td class="text-muted">${formatNum(urun.Satis_Adedi)}</td>
-                        <td class="fw-bold">${formatMoney(urun.Urun_Cirosu)}</td>
-                    </tr>`;
+            const pBody = document.getElementById('productsBody');
+            pBody.innerHTML = '';
+            (data.top_products || []).forEach(u => {
+                pBody.innerHTML += `<tr>
+                    <td class="fw-medium text-truncate" style="max-width: 250px;">${u.Description}</td>
+                    <td class="text-center text-muted">${formatNum(u.Satis_Adedi)}</td>
+                    <td class="text-end fw-bold">${formatMoney(u.Urun_Cirosu)}</td>
+                </tr>`;
             });
 
-            // 4. RFM Grafiğini Çizme
-            const ctx = document.getElementById('rfmChart').getContext('2d');
+            const cBody = document.getElementById('countriesBody');
+            cBody.innerHTML = '';
+            (data.top_countries || []).forEach(c => {
+                cBody.innerHTML += `<tr>
+                    <td class="fw-medium"><span class="badge bg-blue-lt">${c.Country}</span></td>
+                    <td class="text-center text-muted">${formatNum(c.Ulke_Siparis_Sayisi)}</td>
+                    <td class="text-end fw-bold">${formatMoney(c.Ulke_Cirosu)}</td>
+                </tr>`;
+            });
+        }
 
-            // Eğer daha önce grafik çizildiyse, önce onu yok et (yenileme sorunu olmaması için)
-            if (rfmChartInstance) rfmChartInstance.destroy();
+        function renderCharts(latest, history) {
+            Chart.defaults.font.family = 'Inter';
+            Chart.defaults.color = '#626976';
 
-            rfmChartInstance = new Chart(ctx, {
+            if (rfmChart) rfmChart.destroy();
+            const rfmCtx = document.getElementById('rfmChart').getContext('2d');
+            const rfmKeys = Object.keys(latest.rfm_segments || {});
+            const rfmValues = Object.values(latest.rfm_segments || {});
+
+            rfmChart = new Chart(rfmCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: Object.keys(data.rfm_segments),
+                    labels: rfmKeys,
                     datasets: [{
-                        data: Object.values(data.rfm_segments),
-                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6'],
+                        data: rfmValues,
+                        backgroundColor: ['#2fb344', '#f59f00', '#d63939', '#206bc4', '#7048e8', '#4299e1'],
                         borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels: { boxWidth: 12 } } } }
+            });
+
+            if (hourlyChart) hourlyChart.destroy();
+            const hrCtx = document.getElementById('hourlyChart').getContext('2d');
+
+            let hours = [], hrOrders = [];
+            if(latest.hourly_sales && latest.hourly_sales.length > 0) {
+                const sortedHours = latest.hourly_sales.sort((a,b) => a.InvoiceHour - b.InvoiceHour);
+                hours = sortedHours.map(h => `${h.InvoiceHour}:00`);
+                hrOrders = sortedHours.map(h => h.Siparis_Sayisi);
+            }
+
+            hourlyChart = new Chart(hrCtx, {
+                type: 'bar',
+                data: {
+                    labels: hours,
+                    datasets: [{
+                        label: 'Sipariş Sayısı',
+                        data: hrOrders,
+                        backgroundColor: '#7048e8',
+                        borderRadius: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+            });
+
+            if (historyChart) historyChart.destroy();
+            const histCtx = document.getElementById('historyChart').getContext('2d');
+
+            const histDates = history.map(d => {
+                const dateObj = new Date(d.target_date);
+                return `${dateObj.getDate()} ${dateObj.toLocaleString('tr-TR', { month: 'short' })}`;
+            });
+            const histRevenues = history.map(d => parseFloat(d.total_revenue));
+
+            historyChart = new Chart(histCtx, {
+                type: 'line',
+                data: {
+                    labels: histDates,
+                    datasets: [{
+                        label: 'Günlük Ciro (£)',
+                        data: histRevenues,
+                        borderColor: '#206bc4',
+                        backgroundColor: 'rgba(32, 107, 196, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#206bc4',
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.4
                     }]
                 },
                 options: {
                     responsive: true,
-                    cutout: '75%',
-                    plugins: { legend: { position: 'bottom' } }
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
                 }
             });
-
-        } catch (error) {
-            console.error("API Bağlantı Hatası:", error);
-            alert("FastAPI sunucusuna bağlanılamadı. API'nin (uvicorn) çalıştığından emin olun.");
         }
-    }
 
-    // Sayfa açılır açılmaz veriyi çek
-    window.onload = fetchData;
-</script>
-
+        window.onload = fetchAllData;
+    </script>
 </body>
 </html>
