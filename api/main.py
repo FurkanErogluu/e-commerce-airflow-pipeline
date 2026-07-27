@@ -53,4 +53,37 @@ def get_latest_dashboard_data():
     finally:
         if 'cursor' in locals(): cursor.close()
         if 'conn' in locals(): conn.close()
-        
+
+
+@app.get("/api/dashboard/history")
+def get_historical_data():
+    print("İstek alındı: Geçmiş 14 günün trend verisi çekiliyor...")
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+        # Son 14 günün verisini al, ancak grafikte soldan sağa doğru (eskiden yeniye)
+        # düzgün çizilebilmesi için alt sorgu (subquery) ile ASC (artan) sıraya diz.
+        query = """
+            SELECT target_date, total_revenue, total_orders 
+            FROM (
+                SELECT target_date, total_revenue, total_orders 
+                FROM daily_kpi 
+                ORDER BY target_date DESC 
+                LIMIT 14
+            ) AS subquery
+            ORDER BY target_date ASC;
+        """
+        cursor.execute(query)
+        results = cursor.fetchall()
+
+        if not results:
+            raise HTTPException(status_code=404, detail="Geçmiş veri bulunamadı.")
+
+        return results
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals(): conn.close()
