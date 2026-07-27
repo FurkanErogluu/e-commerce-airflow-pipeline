@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Ticaret Yönetim Paneli</title>
+
+    <!-- Modern Font ve Stil Kütüphaneleri -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+        :root { --primary: #4f46e5; --bg-light: #f8fafc; --text-dark: #0f172a; --text-muted: #64748b; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-light); color: var(--text-dark); }
+
+        /* Modern Admin Paneli Tasarımı */
+        .sidebar { background-color: #1e293b; min-height: 100vh; color: white; padding-top: 20px; }
+        .sidebar .nav-link { color: #cbd5e1; font-weight: 500; padding: 12px 20px; margin-bottom: 5px; border-radius: 8px; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { background-color: #334155; color: white; }
+
+        .card { border: none; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 24px; }
+        .kpi-title { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+        .kpi-value { font-size: 1.8rem; font-weight: 700; color: var(--text-dark); }
+
+        .ai-panel { border-left: 4px solid var(--primary); background-color: white; }
+        .ai-title { color: var(--primary); font-weight: 600; font-size: 1.1rem; margin-bottom: 15px; }
+        .badge-risk { background-color: #fee2e2; color: #991b1b; }
+        .badge-action { background-color: #fef3c7; color: #92400e; }
+        .badge-opp { background-color: #dcfce3; color: #166534; }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid p-0">
+    <div class="row g-0">
+        <!-- SOL MENÜ (Sidebar) -->
+        <div class="col-auto col-md-2 d-none d-md-block sidebar px-3">
+            <h4 class="text-center mb-4 mt-2 fw-bold text-white">
+                <i class="bi bi-hexagon-fill text-primary"></i> DataOps
+            </h4>
+            <div class="nav flex-column">
+                <a href="#" class="nav-link active"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+                <a href="#" class="nav-link"><i class="bi bi-people me-2"></i> Müşteriler</a>
+                <a href="#" class="nav-link"><i class="bi bi-box-seam me-2"></i> Ürünler</a>
+                <a href="#" class="nav-link"><i class="bi bi-gear me-2"></i> Ayarlar</a>
+            </div>
+        </div>
+
+        <!-- ANA İÇERİK -->
+        <div class="col p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-bold mb-0">Gerçek Zamanlı Satış Analitiği</h3>
+                    <p class="text-muted mb-0">Son Güncellenme: <span id="targetDate" class="fw-bold text-primary">Yükleniyor...</span></p>
+                </div>
+                <button class="btn btn-primary px-4 py-2" onclick="fetchData()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
+            </div>
+
+            <!-- KPI KARTLARI -->
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card p-4">
+                        <div class="kpi-title">Toplam Ciro</div>
+                        <div class="kpi-value" id="totalRevenue">£0.00</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-4">
+                        <div class="kpi-title">Toplam Sipariş</div>
+                        <div class="kpi-value" id="totalOrders">0</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-4">
+                        <div class="kpi-title">Tekil Müşteri</div>
+                        <div class="kpi-value" id="totalCustomers">0</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-4">
+                        <div class="kpi-title">Ort. Sepet (AOV)</div>
+                        <div class="kpi-value" id="aov">£0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GEMINI YAPAY ZEKA PANELİ -->
+            <div class="card p-4 ai-panel mb-4">
+                <div class="ai-title"><i class="bi bi-robot"></i> Gemini Strateji Ajandası</div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="p-3 rounded bg-light h-100">
+                            <span class="badge badge-risk mb-2 px-2 py-1"> Kritik Risk Analizi</span>
+                            <p class="mb-0 small" id="aiRisk">Yükleniyor...</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 rounded bg-light h-100">
+                            <span class="badge badge-action mb-2 px-2 py-1"> Acil Aksiyon</span>
+                            <p class="mb-0 small" id="aiAction">Yükleniyor...</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 rounded bg-light h-100">
+                            <span class="badge badge-opp mb-2 px-2 py-1"> Büyüme Fırsatı</span>
+                            <p class="mb-0 small" id="aiOpp">Yükleniyor...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLOLAR VE GRAFİKLER -->
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="card p-4 h-100">
+                        <h6 class="fw-bold mb-3"> En Çok Ciro Getiren Ürünler</h6>
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light text-muted small">
+                                <tr><th>Ürün</th><th>Satış</th><th>Ciro</th></tr>
+                            </thead>
+                            <tbody id="productsTableBody">
+                                <!-- JS ile Doldurulacak -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="card p-4 h-100 d-flex flex-column align-items-center">
+                        <h6 class="fw-bold mb-3 w-100">👥 Müşteri Sağlığı (RFM)</h6>
+                        <div style="width: 80%;"><canvas id="rfmChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JAVASCRIPT: API BAĞLANTISI VE GRAFİKLER -->
+<script>
+    let rfmChartInstance = null; // Grafiği güncellemek için global değişken
+
+    // Sayıları para formatına çeviren yardımcı fonksiyon
+    const formatMoney = (num) => new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(num);
+    const formatNum = (num) => new Intl.NumberFormat('en-US').format(num);
+
+    async function fetchData() {
+        try {
+            // FastAPI'den veriyi çekiyoruz!
+            const response = await fetch('http://127.0.0.1:8000/api/dashboard/latest');
+            const data = await response.json();
+
+            // 1. Yazıları ve Rakamları Güncelleme
+            document.getElementById('targetDate').innerText = data.target_date;
+            document.getElementById('totalRevenue').innerText = formatMoney(data.total_revenue);
+            document.getElementById('totalOrders').innerText = formatNum(data.total_orders);
+            document.getElementById('totalCustomers').innerText = formatNum(data.total_customers);
+            document.getElementById('aov').innerText = formatMoney(data.aov);
+
+            // 2. AI Stratejilerini Güncelleme
+            document.getElementById('aiRisk').innerText = data.risk_analysis || 'Veri yok.';
+            document.getElementById('aiAction').innerText = data.urgent_action || 'Veri yok.';
+            document.getElementById('aiOpp').innerText = data.hidden_opportunity || 'Veri yok.';
+
+            // 3. Tabloyu Doldurma
+            const tbody = document.getElementById('productsTableBody');
+            tbody.innerHTML = ''; // Önce temizle
+            data.top_products.forEach(urun => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="fw-medium text-truncate" style="max-width: 200px;">${urun.Description}</td>
+                        <td class="text-muted">${formatNum(urun.Satis_Adedi)}</td>
+                        <td class="fw-bold">${formatMoney(urun.Urun_Cirosu)}</td>
+                    </tr>`;
+            });
+
+            // 4. RFM Grafiğini Çizme
+            const ctx = document.getElementById('rfmChart').getContext('2d');
+
+            // Eğer daha önce grafik çizildiyse, önce onu yok et (yenileme sorunu olmaması için)
+            if (rfmChartInstance) rfmChartInstance.destroy();
+
+            rfmChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(data.rfm_segments),
+                    datasets: [{
+                        data: Object.values(data.rfm_segments),
+                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    cutout: '75%',
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+
+        } catch (error) {
+            console.error("API Bağlantı Hatası:", error);
+            alert("FastAPI sunucusuna bağlanılamadı. API'nin (uvicorn) çalıştığından emin olun.");
+        }
+    }
+
+    // Sayfa açılır açılmaz veriyi çek
+    window.onload = fetchData;
+</script>
+
+</body>
+</html>
