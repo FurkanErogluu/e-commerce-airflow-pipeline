@@ -22,6 +22,7 @@ Benim airflowda bu scriptin bulundugu dizinin bir ust dizine cikmam gerekirki pr
 sys.path.append('/opt/airflow')
 from scripts.process_data import clean_and_summarize_data
 from scripts.ai_action import generate_ai_insight
+from scripts.alert_bot import check_and_alert
 
 #macimdeki data klasoru docker da ->./data:/opt/airflow/data  yani /opt/airflow/data klasorune denk gelir
 raw_data_path = "/opt/airflow/data/raw_sales.csv"
@@ -75,10 +76,13 @@ def ecommerce_pipeline():
         print(f"Zaman 1 gun ileri alindi: Sistem {current_date_str} tarihinden {next_date_str} tarihine başarıyla geçirildi!")
 
 
+    @task
+    def anomaly_alert_task():
+        check_and_alert()
 
 
     #TASK BAGIMLILIKLARI
-    check_raw_data() >> process_data_task() >> ai_insight_task() >> advance_simulation_date()
+    check_raw_data() >> process_data_task() >> ai_insight_task() >> anomaly_alert_task() >> advance_simulation_date()
     #right shift (>>) operatoru gorevlerin sirasini belirler
 
 #DAG'i tanimla ve baslat! SART(Normal fonk cagirmak gibi)

@@ -11,8 +11,8 @@ DB_CONFIG = {
 
 def check_and_alert():
     print("1. Telegram bot kimlikleri kontrol ediliyor...")
-    bot_token = Variable.get("TELEGRAM_BOT_TOKEN", default_var=None)
-    chat_id = Variable.get("TELEGRAM_CHAT_ID", default_var=None)
+    bot_token = Variable.get("TELEGRAM_BOT_TOKEN", default_var="").strip()
+    chat_id = Variable.get("TELEGRAM_CHAT_ID", default_var="").strip()
     target_date_str = Variable.get("SIMULASYON_TARIHI", default_var="2010-12-01")
 
     if not bot_token or not chat_id:
@@ -64,7 +64,7 @@ def check_and_alert():
                         f"Harika bir gün! Bu ivmeyi sağlayan kampanyaları veya en çok satan ürünleri panelden kontrol edin."
                     )
 
-                elif change_rate <= 50:
+                elif change_rate <= -50:
                     alert_message = (
                         f"⚠️ *ANOMALİ: Satışlarda Sert Düşüş* ⚠️\n\n"
                         f"📅 *Tarih:* {target_date_str}\n"
@@ -83,8 +83,14 @@ def check_and_alert():
                 "text": alert_message,
                 "parse_mode": "Markdown"
             }
-            requests.post(url, json=payload)
-            print("Telegram mesaji basariyla gonderildi.")
+            response = requests.post(url, json=payload)
+            res_data = response.json()
+
+            if response.status_code == 200 and res_data.get("ok"):
+                print("✅ Telegram mesajı başarıyla teslim edildi.")
+            else:
+                print(f"❌ Telegram API Hatası: Status {response.status_code} | Yanıt: {res_data}")
+
         else:
             print("Standart bir gun ekstra bildirim gonderilmedi.")
 
