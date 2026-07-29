@@ -16,7 +16,7 @@ app.add_middleware(
 #dockerdaki vtye baglanma icin
 DB_CONFIG = {
     'dbname': 'airflow', 'user': 'airflow', 'password': 'airflow',
-    'host': '127.0.0.1', 'port': '5433'
+    'host': 'postgres', 'port': '5432'
 }
 
 def get_db_connection():

@@ -57,6 +57,28 @@ services:
     depends_on:
       - postgres
       - airflow-init
+
+  backend-api:
+    build: ./api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    restart: always
+
+
+  frontend-dashboard:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend-api
+    restart: always
+
+
+
+
+
 #docker ayaga kalkarken postgres-db-volume --->  /var/lib/postgresql/data  mount edilir(baglanir birbirine)
 volumes:
   postgres-db-volume:

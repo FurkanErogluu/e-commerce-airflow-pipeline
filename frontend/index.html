@@ -49,11 +49,11 @@
                     <div class="row g-2 align-items-center">
                         <div class="col">
                             <div class="page-pretitle text-primary fw-bold">Canlı Veri Akışı</div>
-                            <h2 class="page-title text-dark">Otonom Sistem Simülasyonu</h2>
+                            <h2 class="page-title text-dark">Yönetici Özeti (Executive Dashboard)</h2>
                         </div>
                         <div class="col-auto ms-auto">
                             <div class="d-flex align-items-center gap-3">
-                                <span class="text-muted fw-medium">Hedef Tarih: <strong id="targetDate" class="text-dark">Yükleniyor...</strong></span>
+                                <span class="text-muted fw-medium">Sistem Tarih: <strong id="targetDate" class="text-dark">Yükleniyor...</strong></span>
                                 <button class="btn btn-primary" onclick="fetchAllData()">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" /><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" /></svg>
                                     Tarihi Yenile
@@ -206,9 +206,11 @@
             document.getElementById('aiAction').innerText = data.urgent_action || 'Veri bulunamadı.';
             document.getElementById('aiOpp').innerText = data.hidden_opportunity || 'Veri bulunamadı.';
 
+
+
             const pBody = document.getElementById('productsBody');
-            pBody.innerHTML = '';
-            (data.top_products || []).forEach(u => {
+            pBody.innerHTML = ''; /* Bu kisimda eski tarihe ait tablonun icini bosaltmis oluyoruz diger turlu altina yazar      */
+            (data.top_products || []).forEach(u => {       /* datadan gelen top_products listesinin icinde don eger liste bossa [] bas     */
                 pBody.innerHTML += `<tr>
                     <td class="fw-medium text-truncate" style="max-width: 250px;">${u.Description}</td>
                     <td class="text-center text-muted">${formatNum(u.Satis_Adedi)}</td>
