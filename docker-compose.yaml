@@ -75,10 +75,6 @@ services:
       - backend-api
     restart: always
 
-
-
-
-
 #docker ayaga kalkarken postgres-db-volume --->  /var/lib/postgresql/data  mount edilir(baglanir birbirine)
 volumes:
   postgres-db-volume:

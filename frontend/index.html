@@ -196,7 +196,15 @@
         }
 
         function renderLatestData(data) {
-            document.getElementById('targetDate').innerText = data.target_date;
+            const dateObj = new Date(data.target_date);
+            const formattedDate = new Intl.DateTimeFormat('tr-TR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                weekday: 'long'  //Gun ismini eklemek icin
+            }).format(dateObj);
+            document.getElementById('targetDate').innerText = formattedDate;
+
             document.getElementById('totalRevenue').innerText = formatMoney(data.total_revenue);
             document.getElementById('totalOrders').innerText = formatNum(data.total_orders);
             document.getElementById('totalCustomers').innerText = formatNum(data.total_customers);
