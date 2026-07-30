@@ -1,4 +1,4 @@
-# 🚀 Otonom E-Ticaret Veri Boru Hattı ve Yapay Zeka Komuta Merkezi
+#Otonom E-Ticaret Veri Boru Hattı ve Yapay Zeka Komuta Merkezi
 (Autonomous E-Commerce Data Pipeline & AI Dashboard)
 
 Bu proje, ham e-ticaret satış verilerini otomatik olarak işleyen, müşteri sadakati (RFM) analizi yapan, yapay zeka ile stratejik içgörüler üreten ve sistemdeki anomalileri anlık olarak Telegram üzerinden bildiren bir Apache Airflow projesidir.
@@ -21,7 +21,7 @@ Sistem tamamen mikroservis mimarisine uygun olarak **Docker Compose** ile tek tu
 * **Konteynerizasyon:** Docker & Docker Compose
 * **Bildirim:** Telegram API
 
-## 📂 Proje Dizin Yapısı (Folder Structure)
+##  Proje Dizin Yapısı (Folder Structure)
 ```text
 ├── dags/
 │   └── ecommerce_pipeline.py    # Airflow DAG dosyası
